@@ -56,9 +56,7 @@ async function init() {
 		const event = require(`../Events/${file}`);
 		if (!event.name || !event.run) {
 			warn(
-				`Could not load event "${
-					event.name ? event.name : `Events\\${file}`
-				}"`
+				`Could not load event "${event.name ? event.name : `Events\\${file}`}"`
 			);
 			continue;
 		}
@@ -67,9 +65,7 @@ async function init() {
 				await event.run(...args, client);
 			} catch (e) {
 				console.warn(
-					` Event "${
-						event.name
-					}" Had an error:\n${require("util").inspect(e, {
+					`Event "${event.name}" Had an error:\n${require("util").inspect(e, {
 						depth: 2
 					})}`
 				);
@@ -97,7 +93,7 @@ async function init() {
 				await endpoint.run(req, res);
 			} catch (error) {
 				console.warn(
-					` Endpoint "${
+					`Endpoint "${
 						endpoint.path
 					}" Had an error:\n${require("util").inspect(e, {
 						depth: 2
