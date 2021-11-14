@@ -1,0 +1,4 @@
+# All
+node_modules
+.env
+app.log
