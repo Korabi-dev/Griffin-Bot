@@ -14,7 +14,7 @@ const client = new discord.Client({
 });
 const fs = require("fs");
 const mongoose = require("mongoose");
-const logger = require("cubely");
+const logger = require("consola");
 const express = require("express");
 const app = new express();
 // Globals
@@ -22,13 +22,15 @@ global.commands = client.commands = new discord.Collection();
 global.error = error = logger.error;
 global.info = info = logger.info;
 global.warn = warn = logger.warn;
-global.debug = debug = logger.debug;
+global.success = success = logger.success;
 global.config = config = process.env;
 global.id = id = process.env.roblox_group;
+logger.wrapAll();
+require("../Helpers/functions")(client);
 // Init Function
 async function init() {
 	const currentUser = await noblox.setCookie(process.env.roblox_cookie);
-	info(
+	success(
 		`Logged in as ${currentUser.UserName} [${currentUser.UserID}] on roblox.`
 	);
 	const command_files = fs
@@ -47,7 +49,7 @@ async function init() {
 			continue;
 		}
 		client.commands.set(command.name, command);
-		info(`Loaded Command: ${command.name}`);
+		success(`Loaded Command: ${command.name}`);
 	}
 	const event_files = fs
 		.readdirSync("Events")
@@ -73,7 +75,7 @@ async function init() {
 				);
 			}
 		});
-		info(`Loaded Event: ${event.name}`);
+		success(`Loaded Event: ${event.name}`);
 	}
 	const endpoint_files = fs
 		.readdirSync("Endpoints")
@@ -104,14 +106,15 @@ async function init() {
 				);
 			}
 		});
-		info(`Loaded Endpoint: ${endpoint.path}`);
+		success(`Loaded Endpoint: ${endpoint.path}`);
 	}
+	client.admins = process.env.discord_admins.split(",");
 	client.login(process.env.discord_token);
 	app.listen(process.env.PORT);
-	info(`Webserver listening on port: ${process.env.PORT}`);
+	success(`Webserver listening on port: ${process.env.PORT}`);
 	// eslint-disable-next-line no-unused-vars
 	mongoose.connect(process.env.mongo).then((_) => {
-		info("Database Connected.");
+		success("Database Connected.");
 	});
 }
 // Run the "init" Function
@@ -122,3 +125,20 @@ process.on("uncaughtException", async (err) => {
 	err = require("util").inspect(err, { depth: 2 });
 	error(err);
 });
+
+// Noblox Events
+try {
+	noblox.onWallPost(id).on("data", async function (data) {
+		console.log(data);
+		for (const part of data.body.split(/ /g)) {
+			console.info(part);
+			//&& (data.poster.rank > 9)
+			if (client.isLink(part)) {
+				await noblox.deleteWallPost(id, data.id);
+				info("Deleted post");
+			}
+		}
+	});
+} catch (e) {
+	console.error(e);
+}

@@ -7,6 +7,6 @@ module.exports = {
 	 * @param {discord.Client} client
 	 */
 	run: async (client) => {
-		global.info(`Logged in as ${client.user.tag} on discord.`);
+		global.success(`Logged in as ${client.user.tag} on discord.`);
 	}
 };
