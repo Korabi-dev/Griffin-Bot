@@ -160,12 +160,12 @@ init();
 
 // Handle errors
 process.on("uncaughtException", function (e) {
-	if (e.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
+	if (e.message.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
 		return;
 	console.error(e);
 });
 process.on("unhandledRejection", function (e) {
-	if (e.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
+	if (e.message.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
 		return;
 	console.error(e);
 });
