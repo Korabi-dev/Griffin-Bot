@@ -34,12 +34,20 @@ async function init() {
 		`Logged in as ${currentUser.UserName} [${currentUser.UserID}] on roblox.`
 	);
 	noblox.onWallPost(id).on("data", async function (data) {
-		console.log(data);
 		for (const part of data.body.split(/ /g)) {
-			console.info(part);
-			if (client.isLink(part)) {
+			if (client.isLink(part) && data.poster.role.rank < 10) {
 				await noblox.deleteWallPost(Number(id), data.id);
-				info("Deleted post");
+				info(`Deleted post ${data.id}`);
+				client.log({
+					embeds: [
+						client
+							.embed(
+								"Wall Post Deleted",
+								`Deleted post by ${data.poster.user.displayName} (\`@${data.poster.user.username}\`) with a content of "${data.body}"`
+							)
+							.setTimestamp()
+					]
+				});
 			}
 		}
 	});
@@ -105,6 +113,14 @@ async function init() {
 		}
 		app[endpoint.type](endpoint.path, async (req, res) => {
 			try {
+				if (
+					!req.headers["x-auth"] ||
+					req.headers["x-auth"] !== process.env.express_auth
+				)
+					return res.json({
+						error: true,
+						message: "No authorization sent to API."
+					});
 				await endpoint.run(req, res, client);
 			} catch (e) {
 				console.warn(
@@ -127,13 +143,10 @@ async function init() {
 	mongoose.connect(process.env.mongo).then((_) => {
 		success("Database Connected.");
 	});
-	//console.info(await noblox.getWall(Number(process.env.roblox_group)));
 }
 // Run the "init" Function
 init();
 
 // Handle errors
-process.on("uncaughtException", async (err) => {
-	err = require("util").inspect(err, { depth: 2 });
-	error(err);
-});
+process.on("uncaughtException", error);
+process.on("unhandledRejection", error);
