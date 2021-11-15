@@ -23,7 +23,9 @@ global.error = error = logger.error;
 global.info = info = logger.info;
 global.warn = warn = logger.warn;
 global.debug = debug = logger.debug;
-
+global.config = config = process.env;
+global.id = id = process.env.roblox_group;
+// Init Function
 async function init() {
 	const currentUser = await noblox.setCookie(process.env.roblox_cookie);
 	info(
@@ -112,11 +114,10 @@ async function init() {
 		info("Database Connected.");
 	});
 }
-
+// Run the "init" Function
 init();
 
 // Handle errors
-
 process.on("uncaughtException", async (err) => {
 	err = require("util").inspect(err, { depth: 2 });
 	error(err);
