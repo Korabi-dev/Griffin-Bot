@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 
 // Require dotenv to load .env config
@@ -19,13 +20,20 @@ const logger = require("consola");
 const express = require("express");
 const app = new express();
 // Globals
-global.commands = client.commands = new discord.Collection();
-global.error = error = logger.error;
-global.info = info = logger.info;
-global.warn = warn = logger.warn;
-global.success = success = logger.success;
-global.config = config = process.env;
-global.id = id = process.env.roblox_group;
+global.commands = new discord.Collection();
+client.commands = global.commands;
+global.error = logger.error;
+let error = global.error;
+global.info = logger.info;
+let info = global.info;
+global.warn = logger.warn;
+let warn = global.warn;
+global.success = logger.success;
+let success = global.success;
+global.config = process.env;
+let config = process.env;
+global.id = process.env.roblox_group;
+let id = global.id;
 // Use consola for the whole logs.
 logger.wrapAll();
 // Load Functions
