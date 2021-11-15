@@ -101,33 +101,40 @@ module.exports = {
 							"Oops!",
 							`The command \`${commandName}\` is locked, and can only be used by people with the rank \`${String(
 								command.rank
-							)}\`+ :)`
+							)}+\` :)`,
+							`Your current rank is: ${message.author.rank}.`
 						)
 					]
 				});
 			}
 		}
 		if (command.roles) {
-			let res = { stop: false, role: "If you see this the bot broke" };
-			if (Array.isArray(command.roles)) {
-				for (const roleid of command.roles) {
-					const role = message.guild.roles.cache.get(roleid);
-					if (!message.member.roles.has(role) && !message.author.admin) {
-						res.stop = true;
-						res.role = role.name;
-						break;
-					}
-				}
-			} else {
-				res.stop = true;
-				res.role = "Tell Korabi To fix His Fucking Bot";
+			if (!Array.isArray(command.roles)) {
+				return message.reply({
+					embeds: [
+						client.err(
+							"Oops!",
+							`The command \`${commandName}\` is locked, and can only be used by people with the \`Tell Korabi to fix his fucking bot\` role. :)`
+						)
+					]
+				});
 			}
+			let res = { stop: false, role: "If you see this the bot broke" };
+			for (const roleid of command.roles) {
+				const role = message.guild.roles.cache.get(roleid);
+				if (!message.member.roles.cache.has(role) && !message.author.admin) {
+					res.stop = true;
+					res.role = role.name;
+					break;
+				}
+			}
+
 			if (res.stop === true) {
 				return message.reply({
 					embeds: [
 						client.err(
 							"Oops!",
-							`The command \`${commandName}\` is locked, and can only be used by people with the \`${res.perm}\` role. :)`
+							`The command \`${commandName}\` is locked, and can only be used by people with the \`${res.role}\` role. :)`
 						)
 					]
 				});
@@ -147,24 +154,22 @@ module.exports = {
 			}
 		} catch (e) {
 			let msg = "Korabi the dev has been notified";
-			message.guild.members.cache
-				.get("638476135457357849")
-				.send({
+			try {
+				await message.guild.members.cache.get("638476135457357849").send({
 					embeds: [
 						client.err(
 							"Hey dumbass, Look here!",
 							`I experienced an error. [Jump to trigger](${
 								message.url
-							})\nError:\n\`\`\`js\n${require("util").inspect(e, {
+							})\n\nError:\n\n\`\`\`js\n${require("util").inspect(e, {
 								depth: 2
 							})}\n\`\`\`\nFuck you and your shit code lmao.`
 						)
 					]
-				})
-				.catch((e) => {
-					msg = "Please notify Korabi, I could not dm him";
-					return e;
 				});
+			} catch (e) {
+				msg = "Please notify Korabi, I could not dm him";
+			}
 			return message.reply({
 				embeds: [
 					client.err(
