@@ -10,10 +10,30 @@ module.exports = {
 	 */
 	run: async (message, client) => {
 		if (message.author.bot) return;
-		const c = message.content.replace(/ /g, "").toLowerCase();
+		const replace = [
+			/@/g,
+			/#/g,
+			/%/g,
+			/^/g,
+			/&/g,
+			/\*/g,
+			/\(/g,
+			/\)/g,
+			/-/g,
+			/_/g,
+			/\+/g,
+			/\+/g
+		];
+		let c = message.content.replace(/ /g, "").toLowerCase();
+		replace.map((char) => {
+			c = c.replace(char, "");
+		});
 		for (const word of bad_words.array) {
 			if (c.includes(word.toLowerCase())) {
 				await message.delete();
+				console.info(
+					`${message.author.tag} said: ${message.content}\n\nProfanity (${word}) found in: ${c}`
+				);
 				return await message.channel.send({
 					embeds: [
 						client.err(
@@ -26,6 +46,9 @@ module.exports = {
 		}
 		if (bad_words.regex.test(c)) {
 			await message.delete();
+			console.info(
+				`${message.author.tag} said: ${message.content}\n\nProfanity (regexp) found in: ${c}`
+			);
 			return await message.channel.send({
 				embeds: [
 					client.err(

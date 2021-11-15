@@ -1,3 +1,4 @@
+"use strict";
 /* eslint-disable no-undef */
 
 // Require dotenv to load .env config
@@ -25,7 +26,9 @@ global.warn = warn = logger.warn;
 global.success = success = logger.success;
 global.config = config = process.env;
 global.id = id = process.env.roblox_group;
+// Use consola for the whole logs.
 logger.wrapAll();
+// Load Functions
 require("../Helpers/functions")(client);
 // Init Function
 async function init() {
@@ -148,5 +151,13 @@ async function init() {
 init();
 
 // Handle errors
-process.on("uncaughtException", error);
-process.on("unhandledRejection", error);
+process.on("uncaughtException", function (e) {
+	if (e.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
+		return;
+	console.error(e);
+});
+process.on("unhandledRejection", function (e) {
+	if (e.toLowerCase().includes("socket") || e.toLowerCase().includes("timed"))
+		return;
+	console.error(e);
+});
