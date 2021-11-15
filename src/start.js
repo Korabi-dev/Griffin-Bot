@@ -115,7 +115,7 @@ async function init() {
 
 init();
 
-// Handle rejections
+// Handle errors
 
 process.on("uncaughtException", async (err) => {
 	err = require("util").inspect(err, { depth: 2 });
