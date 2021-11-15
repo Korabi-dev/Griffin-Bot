@@ -90,14 +90,15 @@ async function init() {
 		}
 		app[endpoint.type](endpoint.path, async (req, res) => {
 			try {
-				await endpoint.run(req, res);
-			} catch (error) {
+				await endpoint.run(req, res, client);
+			} catch (e) {
 				console.warn(
-					`Endpoint "${
-						endpoint.path
-					}" Had an error:\n${require("util").inspect(e, {
-						depth: 2
-					})}`
+					`Endpoint "${endpoint.path}" Had an error:\n${require("util").inspect(
+						e,
+						{
+							depth: 2
+						}
+					)}`
 				);
 			}
 		});
