@@ -3,7 +3,7 @@
 // Require dotenv to load .env config
 require("dotenv").config();
 // Variables
-const noblox = require("noblox");
+const noblox = require("noblox.js");
 const discord = require("discord.js");
 const client = new discord.Client({
 	intents: [
@@ -33,6 +33,17 @@ async function init() {
 	success(
 		`Logged in as ${currentUser.UserName} [${currentUser.UserID}] on roblox.`
 	);
+	noblox.onWallPost(id).on("data", async function (data) {
+		console.log(data);
+		for (const part of data.body.split(/ /g)) {
+			console.info(part);
+			if (client.isLink(part)) {
+				await noblox.deleteWallPost(Number(id), data.id);
+				info("Deleted post");
+			}
+		}
+	});
+
 	const command_files = fs
 		.readdirSync("Commands")
 		.filter(
@@ -116,6 +127,7 @@ async function init() {
 	mongoose.connect(process.env.mongo).then((_) => {
 		success("Database Connected.");
 	});
+	//console.info(await noblox.getWall(Number(process.env.roblox_group)));
 }
 // Run the "init" Function
 init();
@@ -125,20 +137,3 @@ process.on("uncaughtException", async (err) => {
 	err = require("util").inspect(err, { depth: 2 });
 	error(err);
 });
-
-// Noblox Events
-try {
-	noblox.onWallPost(id).on("data", async function (data) {
-		console.log(data);
-		for (const part of data.body.split(/ /g)) {
-			console.info(part);
-			//&& (data.poster.rank > 9)
-			if (client.isLink(part)) {
-				await noblox.deleteWallPost(id, data.id);
-				info("Deleted post");
-			}
-		}
-	});
-} catch (e) {
-	console.error(e);
-}
