@@ -48,7 +48,7 @@ module.exports = {
 				message: "Moderator rank is too low to perform this action."
 			});
 		try {
-			await noblox.promote(Number(process.env.roblox_group), target);
+			await noblox.exile(Number(process.env.roblox_group), target);
 			let name =
 				(await noblox.getUsernameFromId(target)) || `(ID: ${target})`;
 			let d_name = (await noblox.getUsernameFromId(mod)) || `(ID: ${mod})`;
