@@ -20,7 +20,7 @@ module.exports = {
 				message: "Invalid Arguments sent to API."
 			});
 		let mod = Number(req.headers["x-mod"]);
-		let promotee = Number(req.headers["x-target"]);
+		let target = Number(req.headers["x-target"]);
 		if (process.env.roblox_admins.split(",").includes(String(target)))
 			return res.json({
 				error: true,
@@ -30,9 +30,9 @@ module.exports = {
 			Number(process.env.roblox_group),
 			mod
 		);
-		let promotee_rank = await noblox.getRankInGroup(
+		let target_rank = await noblox.getRankInGroup(
 			Number(process.env.roblox_group),
-			promotee
+			target
 		);
 		if (!mod_rank)
 			return res.json({
@@ -40,17 +40,17 @@ module.exports = {
 				message: "Moderator not in group.",
 				kick: true
 			});
-		if (!promotee_rank)
+		if (!target_rank)
 			return res.json({ error: true, message: "Target not in group" });
-		if (promotee_rank >= mod_rank || mod_rank - mod_rank === 1)
+		if (target_rank >= mod_rank || mod_rank - mod_rank === 1)
 			return res.json({
 				error: true,
 				message: "Moderator rank is too low to perform this action."
 			});
 		try {
-			await noblox.promote(Number(process.env.roblox_group), promotee);
+			await noblox.promote(Number(process.env.roblox_group), target);
 			let name =
-				(await noblox.getUsernameFromId(promotee)) || `(ID: ${promotee})`;
+				(await noblox.getUsernameFromId(target)) || `(ID: ${target})`;
 			let d_name = (await noblox.getUsernameFromId(mod)) || `(ID: ${mod})`;
 			client.log({
 				embeds: [
