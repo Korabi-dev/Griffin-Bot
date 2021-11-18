@@ -24,6 +24,9 @@ module.exports = {
 			/\+/g,
 			/\+/g
 		];
+		
+		if (message.author.id === '447680195604774922') return;
+		
 		let c = message.content.replace(/ /g, "").toLowerCase();
 		replace.map((char) => {
 			c = c.replace(char, "");
